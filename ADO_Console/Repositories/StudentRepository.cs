@@ -36,10 +36,11 @@ namespace ADO_Console.Repositories
                 // on crée une instance de Student
                 Student student = new Student();
                 // on remplit l'instance avec les données de la db
+                student.Id = (int)reader["Id"];
                 student.LastName = (string)reader["LastName"];
                 student.FirstName = (string)reader["FirstName"];
                 student.BirthDate = (DateTime)reader["BirthDate"];
-                student.YearResult = (int)reader["YearResult"];
+                student.YearResult = reader["YearResult"] as int?;
                 student.SectionId = (int)reader["SectionId"];
 
                 // on ajoute l'etudiant dans la liste
@@ -57,7 +58,20 @@ namespace ADO_Console.Repositories
 
         public int Add(Student student) 
         {
-            throw new NotImplementedException();
+            _connection.Open();
+
+            using SqlCommand command = _connection.CreateCommand();
+            command.CommandText = @"INSERT INTO Student
+                (LastName,FirstName,BirthDate,YearResult,sectionId) OUTPUT inserted.Id VALUES(@lastName, @firstName, @birthDate, @yearResult, @sectionId)";
+            command.Parameters.AddWithValue("lastName", student.LastName);
+            command.Parameters.AddWithValue("firstName", student.FirstName);
+            command.Parameters.AddWithValue("birthDate", student.BirthDate);
+            command.Parameters.AddWithValue("yearResult", student.YearResult ?? (object) DBNull.Value);
+            command.Parameters.AddWithValue("sectionId", student.SectionId);
+            int id = (int)command.ExecuteScalar();
+
+            _connection.Close();
+            return id;
         }
 
         public void Remove(Student student)
