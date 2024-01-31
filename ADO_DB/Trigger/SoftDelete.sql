@@ -1,0 +1,7 @@
+﻿CREATE TRIGGER [SoftDelete]
+ON Student
+INSTEAD OF DELETE
+AS
+BEGIN
+	UPDATE Student SET Active = 0 WHERE Id = (SELECT Id FROM deleted)
+END
