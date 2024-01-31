@@ -28,8 +28,31 @@ while (true)
         case "2":
             AddStudent();
             break;
+        case "3":
+            RemoveStudent();
+            break;
     }
 
+}
+
+void RemoveStudent()
+{
+    int id = int.Parse(Question("Entrez l'id de l'etudiant à suppimer"));
+
+    // studentRepo.Remove(new Student { Id = id });
+
+    Student? s = studentRepo.Get(id);
+
+    if (s is null)
+    {
+        Console.WriteLine("L'étudiant que vous souhaitez supprimer n'existe pas ou a déjà été supprimé");
+        Console.WriteLine("Continuer ...");
+        Console.ReadKey();
+    }
+    else
+    {
+        studentRepo.Remove(s);
+    }
 }
 
 void AddStudent()

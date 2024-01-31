@@ -33,16 +33,7 @@ namespace ADO_Console.Repositories
             // pour chaque ligne de la requète
             while (reader.Read())
             {
-                // on crée une instance de Student
-                Student student = new Student();
-                // on remplit l'instance avec les données de la db
-                student.Id = (int)reader["Id"];
-                student.LastName = (string)reader["LastName"];
-                student.FirstName = (string)reader["FirstName"];
-                student.BirthDate = (DateTime)reader["BirthDate"];
-                student.YearResult = reader["YearResult"] as int?;
-                student.SectionId = (int)reader["SectionId"];
-
+                Student student = ReaderToStudent(reader);
                 // on ajoute l'etudiant dans la liste
                 result.Add(student);
             }
@@ -51,9 +42,28 @@ namespace ADO_Console.Repositories
             return result;
         }
 
-        public Student Get(int id)
+        public Student? Get(int id)
         {
-            throw new NotImplementedException();
+            _connection.Open();
+
+            using SqlCommand command = _connection.CreateCommand();
+            command.CommandText = "SELECT * FROM V_Student WHERE Id = @id";
+            command.Parameters.AddWithValue("id", id);
+            using SqlDataReader reader = command.ExecuteReader();
+
+            // pour chaque ligne de la requète
+            if (reader.Read())
+            {
+                Student student = ReaderToStudent(reader);
+                // on ajoute l'etudiant dans la liste
+                _connection.Close();
+                return student;
+            } 
+            else
+            {
+                _connection.Close();
+                return null;
+            }
         }
 
         public int Add(Student student) 
@@ -79,12 +89,33 @@ namespace ADO_Console.Repositories
 
         public void Remove(Student student)
         {
-            throw new NotImplementedException();
+            _connection.Open();
+
+            SqlCommand cmd = _connection.CreateCommand();
+            cmd.CommandText = "DELETE FROM student WHERE Id = @id";
+            cmd.Parameters.AddWithValue("id", student.Id);
+            cmd.ExecuteNonQuery();
+
+            _connection.Close();
         }
 
         public void Update(Student student)
         {
             throw new NotImplementedException();
+        }
+
+        private Student ReaderToStudent(SqlDataReader reader)
+        {
+            // on crée une instance de Student
+            Student student = new Student();
+            // on remplit l'instance avec les données de la db
+            student.Id = (int)reader["Id"];
+            student.LastName = (string)reader["LastName"];
+            student.FirstName = (string)reader["FirstName"];
+            student.BirthDate = (DateTime)reader["BirthDate"];
+            student.YearResult = reader["YearResult"] as int?;
+            student.SectionId = (int)reader["SectionId"];
+            return student;
         }
     }
 }
