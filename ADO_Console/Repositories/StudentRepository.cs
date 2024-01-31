@@ -1,6 +1,7 @@
 ﻿using ADO_Console.Domain;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -91,7 +92,7 @@ namespace ADO_Console.Repositories
         {
             _connection.Open();
 
-            SqlCommand cmd = _connection.CreateCommand();
+            using SqlCommand cmd = _connection.CreateCommand();
             cmd.CommandText = "DELETE FROM student WHERE Id = @id";
             cmd.Parameters.AddWithValue("id", student.Id);
             cmd.ExecuteNonQuery();
@@ -101,7 +102,17 @@ namespace ADO_Console.Repositories
 
         public void Update(Student student)
         {
-            throw new NotImplementedException();
+            _connection.Open();
+
+            using SqlCommand cmd = _connection.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "UpdateStudent";
+            cmd.Parameters.AddWithValue("SectionID", student.SectionId);
+            cmd.Parameters.AddWithValue("YearResult", student.YearResult);
+            cmd.Parameters.AddWithValue("Id", student.Id);
+            cmd.ExecuteNonQuery();
+
+            _connection.Close();
         }
 
         private Student ReaderToStudent(SqlDataReader reader)
