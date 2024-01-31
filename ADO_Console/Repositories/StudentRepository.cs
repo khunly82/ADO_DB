@@ -61,8 +61,11 @@ namespace ADO_Console.Repositories
             _connection.Open();
 
             using SqlCommand command = _connection.CreateCommand();
-            command.CommandText = @"INSERT INTO Student
-                (LastName,FirstName,BirthDate,YearResult,sectionId) OUTPUT inserted.Id VALUES(@lastName, @firstName, @birthDate, @yearResult, @sectionId)";
+            command.CommandText = @"
+                INSERT INTO Student (LastName,FirstName,BirthDate,YearResult,sectionId) 
+                OUTPUT inserted.Id 
+                VALUES(@lastName, @firstName, @birthDate, @yearResult, @sectionId)
+            ";
             command.Parameters.AddWithValue("lastName", student.LastName);
             command.Parameters.AddWithValue("firstName", student.FirstName);
             command.Parameters.AddWithValue("birthDate", student.BirthDate);

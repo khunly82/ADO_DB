@@ -25,7 +25,7 @@ while (true)
         case "1":
             DisplayStudent();
             break;
-        default:
+        case "2":
             AddStudent();
             break;
     }
@@ -45,7 +45,7 @@ void AddStudent()
     }
     student.SectionId = int.Parse(Question("Entrez la section de l'etudiant"));
 
-    // inserer dans la databse
+    // inserer dans la database
     studentRepo.Add(student);
 }
 
